@@ -94,6 +94,7 @@ let renderLoop = () => {
     requestAnimationFrame( renderLoop );
 
     orbitControl.update();
+    camera.updateMatrixWorld();
 
     const distanceFromCamera = 0.9 * far;
     // const distanceFromCamera = camera.position.length();
