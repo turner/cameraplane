@@ -12,11 +12,9 @@ let showSTMaterial;
 
 let threeJSContainer;
 
-const scratchSpaceYOffset = 512;
-// const scratchSpaceYOffset = 0;
-
 const [ fov, near, far ] = [ 40, 1e-1, 7e2 ];
 
+let [ w, h, scratchSpaceYOffset ] = [ 0, 0, 0 ];
 let main = async(container) => {
 
     const showSTConfig =
@@ -29,26 +27,23 @@ let main = async(container) => {
 
     showSTMaterial = new THREE.ShaderMaterial( showSTConfig );
 
-    const [ w, h ] = [ container.offsetWidth, container.offsetHeight ];
     renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(w, scratchSpaceYOffset + h);
-    renderer.setViewport(0, scratchSpaceYOffset, w, h);
-    renderer.setPixelRatio(window.devicePixelRatio);
-
-    // insert rendering canvas in DOM
     container.appendChild(renderer.domElement);
-
     threeJSContainer = container;
 
+    renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setClearColor(appleCrayonColorHexValue('snow'));
+
+    [ w, h, scratchSpaceYOffset ] = [ container.offsetWidth, container.offsetHeight, container.offsetHeight];
+
+    renderer.setSize(w, scratchSpaceYOffset + h);
+    renderer.setViewport(0, scratchSpaceYOffset, w, h);
 
     camera = new THREE.PerspectiveCamera(fov, w / h, near, far);
     orbitControl = new OrbitControls(camera, renderer.domElement);
     scene = new THREE.Scene();
 
-    scene.background = appleCrayonColorThreeJS('magnesium');
-
-    await setup(scene, renderer, camera, orbitControl);
+    setup(scene, camera, orbitControl);
 
     renderLoop();
 
@@ -56,7 +51,9 @@ let main = async(container) => {
 
 let target;
 let planeMesh;
-let setup = async (scene, renderer, camera, orbitControl) => {
+let setup = (scene, camera, orbitControl) => {
+
+    scene.background = appleCrayonColorThreeJS('magnesium');
 
     const [ targetX, targetY, targetZ ] = [ 0, 0, 0 ];
     target = new THREE.Vector3(targetX, targetY, targetZ);
@@ -158,7 +155,7 @@ let renderLoop = () => {
 
 let onWindowResize = () => {
 
-    const [ w, h ] = [ threeJSContainer.offsetWidth, threeJSContainer.offsetHeight ];
+    [ w, h ] = [ threeJSContainer.offsetWidth, threeJSContainer.offsetHeight ];
 
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
