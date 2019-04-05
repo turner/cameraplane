@@ -10,9 +10,14 @@ let orbitControl;
 
 let showSTMaterial;
 
-const [ near, far, fov ] = [ 1e-1, 7e2, 40 ];
+let threeJSContainer;
 
-let main = async(threejs_canvas) => {
+const scratchSpaceYOffset = 512;
+// const scratchSpaceYOffset = 0;
+
+const [ fov, near, far ] = [ 40, 1e-1, 7e2 ];
+
+let main = async(container) => {
 
     const showSTConfig =
         {
@@ -24,12 +29,20 @@ let main = async(threejs_canvas) => {
 
     showSTMaterial = new THREE.ShaderMaterial( showSTConfig );
 
-    renderer = new THREE.WebGLRenderer({ canvas: threejs_canvas, antialias: true });
-    renderer.setClearColor(appleCrayonColorHexValue('snow'));
+    const [ w, h ] = [ container.offsetWidth, container.offsetHeight ];
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(w, scratchSpaceYOffset + h);
+    renderer.setViewport(0, scratchSpaceYOffset, w, h);
     renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(window.innerWidth, window.innerHeight);
 
-    camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, near, far);
+    // insert rendering canvas in DOM
+    container.appendChild(renderer.domElement);
+
+    threeJSContainer = container;
+
+    renderer.setClearColor(appleCrayonColorHexValue('snow'));
+
+    camera = new THREE.PerspectiveCamera(fov, w / h, near, far);
     orbitControl = new OrbitControls(camera, renderer.domElement);
     scene = new THREE.Scene();
 
@@ -144,9 +157,14 @@ let renderLoop = () => {
 };
 
 let onWindowResize = () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
+
+    const [ w, h ] = [ threeJSContainer.offsetWidth, threeJSContainer.offsetHeight ];
+
+    camera.aspect = w / h;
     camera.updateProjectionMatrix();
-    renderer.setSize( window.innerWidth, window.innerHeight );
+
+    renderer.setSize(w, scratchSpaceYOffset + h);
+    renderer.setViewport(0, scratchSpaceYOffset, w, h);
 };
 
 export { main };
