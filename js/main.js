@@ -13,7 +13,6 @@ let showSTMaterial;
 let threeJSContainer;
 
 const scratchSpaceYOffset = 512;
-// const scratchSpaceYOffset = 0;
 
 const [ fov, near, far ] = [ 40, 1e-1, 7e2 ];
 
@@ -48,7 +47,9 @@ let main = async(container) => {
 
     scene.background = appleCrayonColorThreeJS('magnesium');
 
-    await setup(scene, renderer, camera, orbitControl);
+    await setup(scene, camera, orbitControl);
+
+    renderer.setViewport(0, scratchSpaceYOffset, w, h);
 
     renderLoop();
 
@@ -56,7 +57,7 @@ let main = async(container) => {
 
 let target;
 let planeMesh;
-let setup = async (scene, renderer, camera, orbitControl) => {
+let setup = async (scene, camera, orbitControl) => {
 
     const [ targetX, targetY, targetZ ] = [ 0, 0, 0 ];
     target = new THREE.Vector3(targetX, targetY, targetZ);
